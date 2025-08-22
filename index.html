@@ -49,7 +49,7 @@
       cursor: pointer;
     }
     .options button:hover, .options button:active { background: #2ecc71; }
-    .selected { background: #2ecc71 !important; }
+    .selected { background: #e006a2 !important; }
     #timer { font-size: 2.5em; margin: 20px; }
     canvas {
       max-width: 400px;
@@ -77,32 +77,47 @@
       border-radius: 15px;
       cursor: pointer;
     }
-    .desativado { background: #7f8c8d !important; color: #fff !important; }
+    .desativado { background: #aec0c2 !important; color: #040e11 !important; }
 
     /* ===== Teclado Virtual ===== */
     #keyboard {
-      display: none;
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 10px;
-      max-width: 600px;
-      color: #000;
-    }
-    .row { margin: 5px 0; }
-    .key {
-      display: inline-block;
-      background: #eee;
-      border: 1px solid #ccc;
-      padding: 15px 20px;
-      margin: 3px;
-      border-radius: 5px;
-      font-size: 1.2em;
-      cursor: pointer;
-      user-select: none;
-    }
-    .key:active { background: #bbb; }
-    .key-wide { width: 100px; }
+       #keyboard {
+    display: none; /* oculto por padrão */
+    border: 1px solid #ccc;
+    padding: 10px;
+    background: #f9048f;
+    width: fit-content;
+    position: absolute; /* para poder posicionar perto do input */
+    bottom: 20px;
+    left: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  .row {
+    display: flex;
+    margin-bottom: 5px;
+  }
+
+  .key {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 2px;
+    background: #1aa8cf;
+    border: 1px solid #9713f5;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .key:hover {
+    background: #1310d7;
+  }
+
+  .key-wide {
+    flex: 1;
+    text-align: center;
+  }
+}
     @keyframes fadeIn { from {opacity:0} to {opacity:1} }
   </style>
 </head>
@@ -241,30 +256,37 @@ let timerInterval = null;
   const keyboard = document.getElementById("keyboard");
 
   // mostra o teclado ao clicar no input
-  input.addEventListener("focus", () => {
-    keyboard.style.display = "block";
-  });
+// Mostrar teclado ao clicar no input
+input.addEventListener("click", (e) => {
+  e.stopPropagation(); // impede que o clique suba até o document
+  keyboard.style.display = "block";
+});
 
-  /*
-  document.addEventListener("click", (e) => {
-    if (!keyboard.contains(e.target) && e.target !== input) {
-      keyboard.style.display = "none";
+// Impedir que cliques dentro do teclado fechem ele
+keyboard.addEventListener("click", (e) => {
+  e.stopPropagation();
+});
+
+// Fechar teclado apenas ao clicar no fundo
+document.addEventListener("click", () => {
+  keyboard.style.display = "none";
+});
+
+// funcionamento das teclas
+document.querySelectorAll(".key").forEach(key => {
+  key.addEventListener("click", () => {
+    const action = key.dataset.action;
+    if (action === "backspace") {
+      input.value = input.value.slice(0, -1);
+    } else if (action === "space") {
+      input.value += " ";
+    } else {
+      input.value += key.textContent;
     }
-  });*/
-
-  // funcionamento das teclas
-  document.querySelectorAll(".key").forEach(key => {
-    key.addEventListener("click", () => {
-      const action = key.dataset.action;
-      if (action === "backspace") {
-        input.value = input.value.slice(0, -1);
-      } else if (action === "space") {
-        input.value += " ";
-      } else {
-        input.value += key.textContent;
-      }
-    });
   });
+});
+
+
 
   // === Funções principais do quiz ===
   function mostrarTela2() {
@@ -536,4 +558,5 @@ const socket = io('http://localhost:5001');
  
 </script>
 </body>
+</html>
 </html>
